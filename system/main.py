@@ -4,6 +4,7 @@ import subprocess
 from method import Random
 
 FILE_DIR = '/Users/chan-p/Desktop/R6/'
+# FILE_DIR = '/Users/t-hayshi/Desktop/R6/'
 DBMS = 'mysql'
 USER = 'root'
 PASS = 'tomonori'
