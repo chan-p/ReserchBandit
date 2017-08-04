@@ -1,5 +1,6 @@
 from input_data import InputData
 import sys
+from sklearn.externals import joblib
 from method import Random
 from user_clustering import UserCluster
 
@@ -23,6 +24,7 @@ def user_clustering():
 
     kmeans = UserCluster(N_CLUSTERING)
     kmeans.fit(features)
+    joblib.dump(kmeans, 'kmeans.pkl')
     return kmeans
 
 def evaluate(article, decide_article, click):
