@@ -17,7 +17,7 @@ class Random:
     def get_prob(self, article):
         return np.random.random()
 
-    def update(self):
+    def update(self, userID, article_feature, click):
         return
 
 class LinUCBUserStruct:
@@ -25,6 +25,7 @@ class LinUCBUserStruct:
         self.d = feature_dim
         self.A = lambda_ * np.identity(n=self.d)
         self.b = np.zeros(self.d)
+        self.AInv = np.linalg.inv(self.A)
         self.user_theta = np.random.rand(self.d)
         self.time = 0
 
@@ -57,13 +58,15 @@ class LinUCBAlgorithm:
         maxprob = float('-inf')
         maxid = None
         for id_, article in pool_articles.items():
+            article = np.array(article)
             prob = self.users[userID].get_prob(self.alpha, article)
             if maxprob < prob:
                 maxprob = prob
                 maxid = id_
         return maxid
 
-    def update_parameters(self, userID, article_feature, click):
+    def update(self, userID, article_feature, click):
+        article_feature = np.array(article_feature)
         self.users[userID].update_parameters(article_feature, click)
 
 

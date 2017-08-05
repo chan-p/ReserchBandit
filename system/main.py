@@ -1,15 +1,16 @@
 from input_data import InputData
 import sys
+import numpy as np
 from sklearn.externals import joblib
-from method import Random
+from method import Random, LinUCBAlgorithm
 from user_clustering import UserCluster
 
 N_CLUSTERING = 20
 FILE_DIR = '/Users/chan-p/Desktop/R6/'
-# FILE_DIR = '/Users/t-hayshi/Desktop/R6/'
+# FILE_DIR = '/home/t-hayshi/Desktop/R6/'
 
-reward = 0
-count = 0
+reward = {}
+count = {}
 file_path = ['ydata-fp-td-clicks-v1_0.20090501']
 
 
@@ -27,45 +28,50 @@ def user_clustering():
     joblib.dump(kmeans, 'kmeans.pkl')
     return kmeans
 
-def evaluate(article, decide_article, click):
+def evaluate(article, decide_article, click, name):
     global reward
     global count
 
-    if decide_article == article:
-        reward += click
-        count += 1
-        if count % 100 == 0:print(reward/count)
+    if int(decide_article) == int(article):
+        reward[name] += click
+        count[name] += 1
         return True
     return False
 
 def run_enviroment(algorithms, cluster_model):
-    try:
-        ite = 0
-        for file_name in file_path:
-            with open(FILE_DIR + file_name) as f:
-                for line in f:
-                    timestamp, click_article_id, click, user_data, article_pool = InputData.split_data(line)
-                    for name, alg in algorithms.items():
-                        decide_id = alg.decide(article_pool)
-                        if evaluate(click_article_id, decide_id, click): alg.update()
-                    ite += 1
-                    if ite % 10000 == 0: print(ite, count)
-    except:
-        ex, ms, tb = sys.exc_info()
-        print("ErrorMessage:" + ms)
-        print(ite)
-        print(line)
+    ite = 0
+    for file_name in file_path:
+        with open(FILE_DIR + file_name) as f:
+            for line in f:
+                _, click_article_id, click, user_data, article_pool=InputData.split_data(line)
+                userID = cluster_model.predict_cluster(user_data)[0]
+                for name, alg in algorithms.items():
+                    decide_id = alg.decide(userID, article_pool)
+                    if evaluate(click_article_id, decide_id, click, name):
+                        alg.update(userID, article_pool[decide_id], click)
+                    if ite % 10000 == 0: print(ite, name, reward[name]/count[name])
+                ite += 1
     return
 
 
 if __name__ == "__main__":
 
     dimension = 6
+    alpha = 0.3
+    lambda_ = 0.1
+
+    global reward
+    global count
 
     # 手法の呼び出し
     algorithms = {}
     algorithms['Random'] = Random(dimension)
+    reward['Random'] = 0
+    count['Random'] = 1
+    algorithms['LinUCB'] = LinUCBAlgorithm(dimension, alpha, lambda_, N_CLUSTERING)
+    reward['LinUCB'] = 0
+    count['LinUCB'] = 1
 
-    cluster_model = user_clustering()
+    # cluster_model = user_clustering()
     print("=====Enviroment Start=====")
-    # run_enviroment(algorithms, cluster_model)
+    run_enviroment(algorithms, cluster_model=UserCluster(N_CLUSTERING).model_load('model20.pkl'))
