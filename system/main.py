@@ -6,7 +6,7 @@ from method import Random, LinUCBAlgorithm
 from propose_method import OriginalUCBAlgorithm
 from user_clustering import UserCluster
 
-N_CLUSTERING = 20
+N_CLUSTERING = 40
 FILE_DIR = '/Users/chan-p/Desktop/R6/'
 # FILE_DIR = '/home/t-hayashi/Desktop/R6/'
 
@@ -75,4 +75,4 @@ if __name__ == "__main__":
 
     # cluster_model = user_clustering()
     print("=====Enviroment Start=====")
-    run_enviroment(algorithms, cluster_model=UserCluster(N_CLUSTERING).model_load('model20.pkl'))
+    run_enviroment(algorithms, cluster_model=UserCluster(N_CLUSTERING).model_load('model40.pkl'))
