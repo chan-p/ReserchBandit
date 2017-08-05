@@ -3,11 +3,12 @@ import sys
 import numpy as np
 from sklearn.externals import joblib
 from method import Random, LinUCBAlgorithm
+from propose_method import OriginalUCBAlgorithm
 from user_clustering import UserCluster
 
 N_CLUSTERING = 20
 FILE_DIR = '/Users/chan-p/Desktop/R6/'
-# FILE_DIR = '/home/t-hayshi/Desktop/R6/'
+# FILE_DIR = '/home/t-hayashi/Desktop/R6/'
 
 reward = {}
 count = {}
@@ -66,11 +67,11 @@ if __name__ == "__main__":
     # 手法の呼び出し
     algorithms = {}
     algorithms['Random'] = Random(dimension)
-    reward['Random'] = 0
-    count['Random'] = 1
     algorithms['LinUCB'] = LinUCBAlgorithm(dimension, alpha, lambda_, N_CLUSTERING)
-    reward['LinUCB'] = 0
-    count['LinUCB'] = 1
+    algorithms['OriginalUCBA'] = OriginalUCBAlgorithm(dimension, alpha, lambda_, N_CLUSTERING)
+    for name in algorithms.keys():
+        reward[name] = 0
+        count[name] = 1
 
     # cluster_model = user_clustering()
     print("=====Enviroment Start=====")
