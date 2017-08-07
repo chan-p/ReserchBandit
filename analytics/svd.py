@@ -19,7 +19,7 @@ with open('/Users/chan-p/Desktop/R6/ydata-fp-td-clicks-v1_0.20090501') as f:
         userID = model.predict_cluster(user_data)[0]
         if click == 1:
             if userID not in clicks: clicks[userID] = []
-            clicks[userID].append(user_data)
+            clicks[userID].append(article_pool[str(click_article_id)])
             if len(clicks[userID]) == 5000:
                 break
             if len(clicks[userID]) % 100 == 0:

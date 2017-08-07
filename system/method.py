@@ -4,7 +4,7 @@ class Random:
     def __init__(self, dimension):
         self.dimension = dimension
 
-    def decide(self, userID, pool_articles):
+    def decide(self, userID, user_data, pool_articles):
         maxprob = float('-inf')
         maxid = None
         for id_, article in pool_articles.items():
@@ -17,7 +17,7 @@ class Random:
     def get_prob(self, article):
         return np.random.random()
 
-    def update(self, userID, article_feature, click):
+    def update(self, userID, user_data, article_feature, click):
         return
 
 class LinUCBUserStruct:
@@ -54,7 +54,7 @@ class LinUCBAlgorithm:
         self.dim = dim
         self.alpha = alpha
 
-    def decide(self, userID, pool_articles):
+    def decide(self, userID, user_data, pool_articles):
         maxprob = float('-inf')
         maxid = None
         for id_, article in pool_articles.items():
@@ -65,7 +65,7 @@ class LinUCBAlgorithm:
                 maxid = id_
         return maxid
 
-    def update(self, userID, article_feature, click):
+    def update(self, userID, user_data, article_feature, click):
         article_feature = np.array(article_feature)
         self.users[userID].update_parameters(article_feature, click)
 

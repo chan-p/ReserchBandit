@@ -47,9 +47,9 @@ def run_enviroment(algorithms, cluster_model):
                 _, click_article_id, click, user_data, article_pool=InputData.split_data(line)
                 userID = cluster_model.predict_cluster(user_data)[0]
                 for name, alg in algorithms.items():
-                    decide_id = alg.decide(userID, article_pool)
+                    decide_id = alg.decide(userID, user_data, article_pool)
                     if evaluate(click_article_id, decide_id, click, name):
-                        alg.update(userID, article_pool[decide_id], click)
+                        alg.update(userID, user_data, article_pool[decide_id], click)
                     if ite % 10000 == 0: print(ite, name, reward[name]/count[name])
                 ite += 1
     return

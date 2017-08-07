@@ -16,9 +16,9 @@ class OriginalUCBUserStruct:
         self.high_average_context = np.array([0. for i in range(self.d)])
         self.stdev_context = np.array([0. for i in range(self.d)])
 
-    def update_parameters(self, article_feature, click):
+    def update_parameters(self, article_feature, click, user_data):
         self.A += np.outer(article_feature, article_feature)
-        self.b += article_feature * (click - self.vias)
+        self.b += article_feature * (click - self.vias - user_data)
         self.AInv = np.linalg.inv(self.A)
         self.user_theta = np.dot(self.AInv, self.b)
         self.time += 1
@@ -38,11 +38,12 @@ class OriginalUCBUserStruct:
             old_ave = self.low_average_context[i]
             self.low_average_context[i] = (1./float(n+1)) * (float(n)*self.low_average_context[i] + article_feature[i])
 
-    def get_prob(self, alpha, article_feature):
+    def get_prob(self, alpha, user_data, article_feature):
         if alpha == -1:
             alpha = 0.1 * np.sqrt(np.log(self.time+1))
-        mean = np.dot(self.user_theta, article_feature)
+        mean = np.dot((self.user_theta + user_data), article_feature)
         var = np.sqrt(np.dot(np.dot(article_feature, self.AInv), article_feature))
+        vias = 0
         vias = self.vias_calculation(article_feature)
         pta = mean + alpha * var + vias
         return pta
@@ -67,20 +68,22 @@ class OriginalUCBAlgorithm:
         self.dim = dim
         self.alpha = alpha
 
-    def decide(self, userID, pool_articles):
+    def decide(self, userID, user_data, pool_articles):
         maxprob = float('-inf')
         maxid = None
         for id_, article in pool_articles.items():
             article = np.array(article)
-            prob = self.users[userID].get_prob(self.alpha, article)
+            user = np.array(user_data)
+            prob = self.users[userID].get_prob(self.alpha, user, article)
             if maxprob < prob:
                 maxprob = prob
                 maxid = id_
         return maxid
 
-    def update(self, userID, article_feature, click):
+    def update(self, userID, user_data, article_feature, click):
+        user_data = np.array(user_data)
         article_feature = np.array(article_feature)
-        self.users[userID].update_parameters(article_feature, click)
+        self.users[userID].update_parameters(article_feature, click, user_data)
         if click == 0:
             self.users[userID].update_lowinterest(article_feature)
         elif click == 1:
