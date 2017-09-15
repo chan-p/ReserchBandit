@@ -18,18 +18,32 @@ class UserCluster:
 
 
 if __name__=='__main__':
-    km = UserCluster(40)
+    n = 1000
+    km = UserCluster(n)
     users = []
     with open('../../../Desktop/R6/ydata-fp-td-clicks-v1_0.20090501') as f:
         for line in f:
             timestamp, click_article_id, click, user_data, article_pool = InputData.split_data(line)
             users.append(user_data)
-            if len(users) == 200000:
+            if len(users) == 3000000:
                 km.fit(users)
-                joblib.dump(km, './model/model40.pkl')
+                joblib.dump(km, './model/model'+str(n)+'_'+str(len(users))+'.pkl')
                 # k = km.model_load('model40.pkl')
                 '''
                 for user in users:
                     print(k.predict_cluster(user))
                 '''
+        am = UserCluster(n)
+        am.fit(users)
+        joblib.dump(am, './model/model'+str(n)+'_'+str(len(users))+'.pkl')
+"""
 
+if __name__=='__main__':
+    km = UserCluster(50)
+    users = []
+    with open('../analytics/stdev/usercluster200.csv') as f:
+        for line in f:
+            users.append(list(map(float, line.split(','))))
+    km.fit(users)
+    joblib.dump(km, './model/stdevmodel200_50.pkl')
+"""
