@@ -10,11 +10,9 @@ RUN bash -c 'echo "root:root" | chpasswd'
 CMD /usr/sbin/sshd -D && tail -f /dev/null
 EXPOSE 22
 
-RUN mkdir DockerWorking
-RUN cd DockerWorking
+RUN mkdir DockerWorking  && \
+    cd DockerWorking  && \
+    apt-get install git-man less liberror-perl libpopt0 rsync git  && \
+    git clone https://github.com/chan-p/ReserchBandit.git
 
-RUN apt-get install git-man less liberror-perl libpopt0 rsync git
-RUN git clone https://github.com/chan-p/ReserchBandit.git
-
-RUN ls
-RUN pip install -r ./ReserchBandit/docker/packages_requirements.txt
+RUN pip install -r ReserchBandit/docker/requirements.txt
